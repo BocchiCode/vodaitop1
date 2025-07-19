@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let allChampionsData = {};
     let currentUser = null;
+    let latestVersion = ''; // Biến để lưu phiên bản mới nhất
 
     // 4. HÀM LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP
     auth.onAuthStateChanged(user => {
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. CÁC HÀM XỬ LÝ SỰ KIỆN
+    // 5. CÁC HÀM XỬ LÝ SỰ KIỆN (Giữ nguyên)
     registerForm.addEventListener('submit', e => {
         e.preventDefault();
         const email = document.getElementById('register-email').value;
@@ -86,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveState(currentUser.uid);
     });
 
-    // 6. HÀM LƯU VÀ TẢI DỮ LIỆU
+    // 6. HÀM LƯU VÀ TẢI DỮ LIỆU (Giữ nguyên)
     function saveState(userId) {
         if (!userId) return;
         const completedChampions = [];
@@ -114,14 +115,23 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Lỗi khi tải:', error));
     }
 
-    // 7. HÀM RENDER TƯỚNG (QUAY LẠI PHIÊN BẢN 2 DIV)
+    // 7. HÀM RENDER TƯỚNG (ĐÃ NÂNG CẤP)
     async function renderChampions() {
+        // Chỉ tải dữ liệu từ API nếu chưa có
         if (Object.keys(allChampionsData).length === 0) {
             grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Đang tải danh sách tướng...</p>';
             try {
-                const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/14.14.1/data/en_US/champion.json`);
+                // BƯỚC 1: Tải danh sách các phiên bản
+                const versionsResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+                const versions = await versionsResponse.json();
+                latestVersion = versions[0]; // Lấy phiên bản mới nhất
+                console.log("Phiên bản game mới nhất:", latestVersion);
+
+                // BƯỚC 2: Dùng phiên bản mới nhất để tải danh sách tướng
+                const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
                 const json = await response.json();
                 allChampionsData = json.data;
+
             } catch (error) {
                 grid.innerHTML = '<p style="color: red; text-align: center; grid-column: 1 / -1;">Lỗi tải danh sách tướng.</p>';
                 console.error("Lỗi khi fetch:", error);
@@ -134,21 +144,20 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const name of championNames) {
             const champData = allChampionsData[name];
             
-            // Tạo div bên ngoài (khung 80x80)
+            // Tạo div bên ngoài (khung)
             const item = document.createElement('div');
             item.className = 'champion-item';
             item.dataset.name = champData.id;
             item.title = champData.name;
 
-            // Tạo div bên trong (icon 48x48)
+            // Tạo div bên trong (icon)
             const iconDiv = document.createElement('div');
             iconDiv.className = 'champion-icon';
-            iconDiv.style.backgroundImage = `url(https://ddragon.leagueoflegends.com/cdn/14.14.1/img/sprite/${champData.image.sprite})`;
+            // BƯỚC 3: Dùng phiên bản mới nhất để lấy ảnh
+            iconDiv.style.backgroundImage = `url(https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/sprite/${champData.image.sprite})`;
             iconDiv.style.backgroundPosition = `-${champData.image.x}px -${champData.image.y}px`;
             
-            // Bỏ div icon vào trong div khung
             item.appendChild(iconDiv);
-            
             grid.appendChild(item);
         }
     }
