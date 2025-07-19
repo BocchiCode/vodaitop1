@@ -1,0 +1,180 @@
+/* --- Cài đặt chung --- */
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg-color: #ffffff;
+    --text-color: #1c1e21;
+    --border-color: #dddfe2;
+    --primary-color: #1877f2;
+    /* THAY ĐỔI 1: Chỉnh kích thước hiển thị về 48px */
+    --icon-display-size: 48px; 
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+}
+
+#app {
+    max-width: 1200px;
+    margin: auto;
+    background-color: var(--card-bg-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+header {
+    /* CSS cho header */
+}
+
+h1 {
+    text-align: center;
+    padding-top: 20px;
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.controls {
+    padding: 0 20px 20px 20px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+/* --- Lưới hiển thị tướng --- */
+main {
+    padding: 20px;
+}
+
+#champion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--icon-display-size), 1fr));
+    /* THAY ĐỔI 2: Giảm khoảng cách giữa các icon cho gọn hơn */
+    gap: 10px; 
+    justify-content: center;
+}
+
+/* Khung chứa bên ngoài */
+.champion-item {
+    width: var(--icon-display-size);
+    height: var(--icon-display-size);
+    position: relative;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Icon thật sự bên trong */
+.champion-icon {
+    width: 48px;
+    height: 48px;
+    background-repeat: no-repeat;
+    
+    /* Phép tính này sẽ tự động điều chỉnh: calc(48 / 48) = 1, tức là không phóng to */
+    transform-origin: top left;
+    transform: scale(calc(var(--icon-display-size) / 48)); 
+    transition: filter 0.3s ease;
+}
+
+.champion-item:hover .champion-icon {
+    filter: brightness(1.1);
+}
+
+/* --- Hiệu ứng khi đã hoàn thành --- */
+.completed .champion-icon {
+    filter: grayscale(80%) brightness(0.7);
+}
+
+.champion-item::after {
+    content: '✔';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: calc(var(--icon-display-size) * 0.6); /* Điều chỉnh lại kích thước dấu tick */
+    color: white;
+    background-color: rgba(30, 200, 80, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 0 5px black;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.completed::after {
+    opacity: 1;
+}
+
+/* --- CSS cho khu vực xác thực --- */
+#auth-container {
+    padding: 0 20px 20px 20px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+#login-register-forms {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+#login-register-forms form {
+    min-width: 250px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#login-register-forms h3 {
+    margin: 0 0 5px 0;
+    text-align: center;
+}
+
+#login-register-forms input, #login-register-forms button {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+#login-register-forms button {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+#user-info {
+    text-align: center;
+}
+
+#user-info p {
+    font-size: 16px;
+    margin-top: 0;
+}
+
+#logout-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    background-color: #dc3545;
+    color: white;
+    cursor: pointer;
+}
