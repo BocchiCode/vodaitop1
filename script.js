@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let allChampionsData = {};
     let currentUser = null;
-    let latestVersion = ''; // Biến để lưu phiên bản mới nhất
+    let latestVersion = '';
 
     // 4. HÀM LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP
     auth.onAuthStateChanged(user => {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. CÁC HÀM XỬ LÝ SỰ KIỆN (Giữ nguyên)
+    // 5. CÁC HÀM XỬ LÝ SỰ KIỆN
     registerForm.addEventListener('submit', e => {
         e.preventDefault();
         const email = document.getElementById('register-email').value;
@@ -87,7 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
         saveState(currentUser.uid);
     });
 
-    // 6. HÀM LƯU VÀ TẢI DỮ LIỆU (Giữ nguyên)
+    // === PHẦN THÊM MỚI 1: KÍCH HOẠT HÀM TÌM KIẾM ===
+    searchInput.addEventListener('input', handleSearch);
+
+
+    // 6. HÀM LƯU VÀ TẢI DỮ LIỆU
     function saveState(userId) {
         if (!userId) return;
         const completedChampions = [];
@@ -115,19 +119,34 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Lỗi khi tải:', error));
     }
 
-    // 7. HÀM RENDER TƯỚNG (ĐÃ NÂNG CẤP)
+    // === PHẦN THÊM MỚI 2: HÀM LOGIC ĐỂ TÌM KIẾM ===
+    function handleSearch() {
+        const query = searchInput.value.toLowerCase().trim();
+        const allItems = document.querySelectorAll('.champion-item');
+
+        allItems.forEach(item => {
+            // Lấy tên tướng từ thuộc tính 'data-name' mà chúng ta đã gán lúc render
+            const championName = item.dataset.name.toLowerCase();
+
+            // Kiểm tra nếu tên tướng chứa cụm từ tìm kiếm
+            if (championName.includes(query)) {
+                item.style.display = 'block'; // Hiển thị nếu khớp
+            } else {
+                item.style.display = 'none'; // Ẩn đi nếu không khớp
+            }
+        });
+    }
+
+    // 7. HÀM RENDER TƯỚNG
     async function renderChampions() {
-        // Chỉ tải dữ liệu từ API nếu chưa có
         if (Object.keys(allChampionsData).length === 0) {
             grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Đang tải danh sách tướng...</p>';
             try {
-                // BƯỚC 1: Tải danh sách các phiên bản
                 const versionsResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
                 const versions = await versionsResponse.json();
-                latestVersion = versions[0]; // Lấy phiên bản mới nhất
+                latestVersion = versions[0];
                 console.log("Phiên bản game mới nhất:", latestVersion);
 
-                // BƯỚC 2: Dùng phiên bản mới nhất để tải danh sách tướng
                 const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
                 const json = await response.json();
                 allChampionsData = json.data;
@@ -144,16 +163,13 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const name of championNames) {
             const champData = allChampionsData[name];
             
-            // Tạo div bên ngoài (khung)
             const item = document.createElement('div');
             item.className = 'champion-item';
-            item.dataset.name = champData.id;
+            item.dataset.name = champData.id; // Gán tên tướng vào đây để hàm search sử dụng
             item.title = champData.name;
 
-            // Tạo div bên trong (icon)
             const iconDiv = document.createElement('div');
             iconDiv.className = 'champion-icon';
-            // BƯỚC 3: Dùng phiên bản mới nhất để lấy ảnh
             iconDiv.style.backgroundImage = `url(https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/sprite/${champData.image.sprite})`;
             iconDiv.style.backgroundPosition = `-${champData.image.x}px -${champData.image.y}px`;
             

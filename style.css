@@ -103,9 +103,10 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    font-size: calc(var(--icon-display-size) * 0.6); /* Điều chỉnh lại kích thước dấu tick */
+    font-size: calc(var(--icon-display-size) * 0.6);
     color: white;
-    background-color: rgba(30, 200, 80, 0.8);
+    /* THAY ĐỔI Ở ĐÂY: Giảm từ 0.8 xuống 0.5 để mờ hơn */
+    background-color: rgba(30, 200, 80, 0.5); 
     display: flex;
     align-items: center;
     justify-content: center;
