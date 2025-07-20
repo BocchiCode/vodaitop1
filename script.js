@@ -83,15 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!currentUser) return;
         const item = e.target.closest('.champion-item');
         if (!item) return;
-        // Gán/xóa class .completed cho phần tử cha
         item.classList.toggle('completed');
         saveState(currentUser.uid);
     });
 
     searchInput.addEventListener('input', handleSearch);
 
-
-    // 6. HÀM LƯU VÀ TẢI DỮ LIỆU
+    // 6. CÁC HÀM CƠ BẢN
     function saveState(userId) {
         if (!userId) return;
         const completedChampions = [];
@@ -110,11 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (doc.exists) {
                     const completed = new Set(doc.data().completed || []);
                     document.querySelectorAll('.champion-item').forEach(item => {
-                        // Dựa vào dữ liệu, gán/xóa class .completed cho phần tử cha
                         item.classList.toggle('completed', completed.has(item.dataset.name));
                     });
-                } else {
-                    console.log('Không có dữ liệu cũ.');
                 }
             })
             .catch(error => console.error('Lỗi khi tải:', error));
@@ -123,15 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleSearch() {
         const query = searchInput.value.toLowerCase().trim();
         const allItems = document.querySelectorAll('.champion-item');
-
         allItems.forEach(item => {
             const championName = item.title.toLowerCase();
-            const championId = item.dataset.name.toLowerCase();
-
-            if (championName.includes(query) || championId.includes(query)) {
-                item.style.display = 'flex'; // Hiển thị nếu khớp
+            if (championName.includes(query)) {
+                item.style.display = 'flex';
             } else {
-                item.style.display = 'none'; // Ẩn đi nếu không khớp
+                item.style.display = 'none';
             }
         });
     }
@@ -144,15 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const versionsResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
                 const versions = await versionsResponse.json();
                 latestVersion = versions[0];
-                console.log("Phiên bản game mới nhất:", latestVersion);
-
                 const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
                 const json = await response.json();
                 allChampionsData = json.data;
-
             } catch (error) {
                 grid.innerHTML = '<p style="color: red; text-align: center; grid-column: 1 / -1;">Lỗi tải danh sách tướng.</p>';
-                console.error("Lỗi khi fetch:", error);
                 return;
             }
         }
