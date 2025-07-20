@@ -98,21 +98,18 @@ main {
     filter: brightness(1.1);
 }
 
-/* --- Hiệu ứng khi đã hoàn thành (Sửa đổi để giống ảnh) --- */
+/* --- Hiệu ứng khi đã hoàn thành --- */
 
 /* Lớp phủ màu xanh lá đậm */
 .champion-icon::after {
-    content: ''; /* Xóa dấu tick ✔ mặc định */
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    
-    /* Màu xanh lá đậm như trong ảnh, che phủ nhiều */
     background-color: rgba(14, 113, 56, 0.75); 
-    
-    opacity: 0; /* Mặc định ẩn */
+    opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 2;
 }
@@ -129,7 +126,7 @@ main {
     text-shadow: 0 0 5px black;
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: 3; /* Nằm trên lớp phủ màu xanh */
+    z-index: 3;
 }
 
 /* Khi có class .completed, hiển thị cả hai lớp phủ */
@@ -197,3 +194,47 @@ main {
     color: white;
     cursor: pointer;
 }
+
+/* --- CSS cho Tooltip chỉ số --- */
+#champion-tooltip {
+    display: none;
+    position: absolute;
+    background-color: #2c2f33;
+    color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #4f545c;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    width: 220px;
+    font-size: 14px;
+    pointer-events: none;
+    text-align: left;
+}
+
+#champion-tooltip h4 {
+    margin: 0 0 8px 0;
+    color: #7289da;
+    font-size: 16px;
+    border-bottom: 1px solid #4f545c;
+    padding-bottom: 5px;
+    font-weight: 500;
+}
+
+#champion-tooltip p {
+    margin: 6px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#champion-tooltip p strong {
+    color: #99aab5;
+}
+
+/* --- CSS cho các bậc Tier --- */
+.tier-s-plus { color: #ff7f7f; font-weight: bold; }
+.tier-s { color: #ffbf7f; font-weight: bold; }
+.tier-a { color: #ffff7f; font-weight: bold; }
+.tier-b { color: #bfff7f; font-weight: bold; }
+.tier-c { color: #7fbf7f; font-weight: bold; }
+.tier-d { color: #a9a9a9; font-weight: bold; }
