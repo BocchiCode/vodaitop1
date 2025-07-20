@@ -1,0 +1,2 @@
+# Bỏ qua các thư mục node_modules ở bất kỳ đâu trong dự án
+**/node_modules
