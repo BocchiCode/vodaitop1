@@ -83,11 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!currentUser) return;
         const item = e.target.closest('.champion-item');
         if (!item) return;
+        // Gán/xóa class .completed cho phần tử cha
         item.classList.toggle('completed');
         saveState(currentUser.uid);
     });
 
-    // === PHẦN THÊM MỚI 1: KÍCH HOẠT HÀM TÌM KIẾM ===
     searchInput.addEventListener('input', handleSearch);
 
 
@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (doc.exists) {
                     const completed = new Set(doc.data().completed || []);
                     document.querySelectorAll('.champion-item').forEach(item => {
+                        // Dựa vào dữ liệu, gán/xóa class .completed cho phần tử cha
                         item.classList.toggle('completed', completed.has(item.dataset.name));
                     });
                 } else {
@@ -119,18 +120,16 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Lỗi khi tải:', error));
     }
 
-    // === PHẦN THÊM MỚI 2: HÀM LOGIC ĐỂ TÌM KIẾM ===
     function handleSearch() {
         const query = searchInput.value.toLowerCase().trim();
         const allItems = document.querySelectorAll('.champion-item');
 
         allItems.forEach(item => {
-            // Lấy tên tướng từ thuộc tính 'data-name' mà chúng ta đã gán lúc render
-            const championName = item.dataset.name.toLowerCase();
+            const championName = item.title.toLowerCase();
+            const championId = item.dataset.name.toLowerCase();
 
-            // Kiểm tra nếu tên tướng chứa cụm từ tìm kiếm
-            if (championName.includes(query)) {
-                item.style.display = 'block'; // Hiển thị nếu khớp
+            if (championName.includes(query) || championId.includes(query)) {
+                item.style.display = 'flex'; // Hiển thị nếu khớp
             } else {
                 item.style.display = 'none'; // Ẩn đi nếu không khớp
             }
@@ -165,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const item = document.createElement('div');
             item.className = 'champion-item';
-            item.dataset.name = champData.id; // Gán tên tướng vào đây để hàm search sử dụng
+            item.dataset.name = champData.id;
             item.title = champData.name;
 
             const iconDiv = document.createElement('div');
@@ -173,7 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
             iconDiv.style.backgroundImage = `url(https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/sprite/${champData.image.sprite})`;
             iconDiv.style.backgroundPosition = `-${champData.image.x}px -${champData.image.y}px`;
             
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'champion-name';
+            nameSpan.textContent = champData.name;
+            
             item.appendChild(iconDiv);
+            item.appendChild(nameSpan);
+            
             grid.appendChild(item);
         }
     }

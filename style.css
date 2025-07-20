@@ -5,7 +5,6 @@
     --text-color: #1c1e21;
     --border-color: #dddfe2;
     --primary-color: #1877f2;
-    /* THAY ĐỔI 1: Chỉnh kích thước hiển thị về 48px */
     --icon-display-size: 48px; 
 }
 
@@ -58,65 +57,84 @@ main {
 
 #champion-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--icon-display-size), 1fr));
-    /* THAY ĐỔI 2: Giảm khoảng cách giữa các icon cho gọn hơn */
-    gap: 10px; 
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+    gap: 15px; 
     justify-content: center;
 }
 
 /* Khung chứa bên ngoài */
 .champion-item {
-    width: var(--icon-display-size);
-    height: var(--icon-display-size);
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px; 
     cursor: pointer;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    width: 70px; 
+    margin: 0 auto;
 }
 
 /* Icon thật sự bên trong */
 .champion-icon {
-    width: 48px;
-    height: 48px;
+    width: var(--icon-display-size);
+    height: var(--icon-display-size);
     background-repeat: no-repeat;
-    
-    /* Phép tính này sẽ tự động điều chỉnh: calc(48 / 48) = 1, tức là không phóng to */
-    transform-origin: top left;
-    transform: scale(calc(var(--icon-display-size) / 48)); 
-    transition: filter 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.champion-name {
+    font-size: 11px;
+    color: #4b4f56;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .champion-item:hover .champion-icon {
     filter: brightness(1.1);
 }
 
-/* --- Hiệu ứng khi đã hoàn thành --- */
-.completed .champion-icon {
-    filter: grayscale(80%) brightness(0.7);
-}
+/* --- Hiệu ứng khi đã hoàn thành (Sửa đổi để giống ảnh) --- */
 
-.champion-item::after {
-    content: '✔';
+/* Lớp phủ màu xanh lá đậm */
+.champion-icon::after {
+    content: ''; /* Xóa dấu tick ✔ mặc định */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    font-size: calc(var(--icon-display-size) * 0.6);
-    color: white;
-    /* THAY ĐỔI Ở ĐÂY: Giảm từ 0.8 xuống 0.5 để mờ hơn */
-    background-color: rgba(30, 200, 80, 0.5); 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-shadow: 0 0 5px black;
-    opacity: 0;
+    
+    /* Màu xanh lá đậm như trong ảnh, che phủ nhiều */
+    background-color: rgba(14, 113, 56, 0.75); 
+    
+    opacity: 0; /* Mặc định ẩn */
     transition: opacity 0.3s ease;
     z-index: 2;
 }
 
-.completed::after {
+/* Dấu tick ✔ màu trắng được tạo riêng */
+.champion-icon::before {
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: calc(var(--icon-display-size) * 0.6);
+    text-shadow: 0 0 5px black;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 3; /* Nằm trên lớp phủ màu xanh */
+}
+
+/* Khi có class .completed, hiển thị cả hai lớp phủ */
+.completed .champion-icon::after,
+.completed .champion-icon::before {
     opacity: 1;
 }
 
