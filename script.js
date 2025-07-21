@@ -26,9 +26,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     
+    // === PHẦN THÊM MỚI: Lấy các thành phần của bảng tiến trình ===
+    const progressTierIcon = document.getElementById('progress-tier-icon');
+    const progressCurrent = document.getElementById('progress-current');
+    const progressNextGoal = document.getElementById('progress-next-goal');
+    const progressBar = document.getElementById('progress-bar');
+
     let allChampionsData = {};
     let currentUser = null;
     let latestVersion = '';
+
+    // === PHẦN THÊM MỚI: Dữ liệu về các bậc thành tựu ===
+    const tiers = [
+    { name: 'Unranked', vietnameseName: 'Chưa xếp hạng', threshold: 0, icon: 'https://raw.githubusercontent.com/Mar-Es/lol-challenges/main/src/assets/images/Challenge_Tokens/602002_IRON.png' },
+    { name: 'Iron', vietnameseName: 'Sắt', threshold: 3, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-IRON.png' },
+    { name: 'Bronze', vietnameseName: 'Đồng', threshold: 6, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-BRONZE.png' },
+    { name: 'Silver', vietnameseName: 'Bạc', threshold: 12, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-SILVER.png' },
+    { name: 'Gold', vietnameseName: 'Vàng', threshold: 20, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-GOLD.png' },
+    { name: 'Platinum', vietnameseName: 'Bạch Kim', threshold: 32, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-PLATINUM.png' },
+    { name: 'Diamond', vietnameseName: 'Kim Cương', threshold: 45, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-DIAMOND.png' },
+    { name: 'Master', vietnameseName: 'Cao Thủ', threshold: 60, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-MASTER.png' }
+];
 
     // 4. HÀM LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP
     auth.onAuthStateChanged(user => {
@@ -85,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!item) return;
         item.classList.toggle('completed');
         saveState(currentUser.uid);
+        updateProgressTracker(); // Cập nhật tiến trình khi click
     });
 
     searchInput.addEventListener('input', handleSearch);
@@ -97,7 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
             completedChampions.push(item.dataset.name);
         });
         db.collection('users').doc(userId).set({ completed: completedChampions })
-            .then(() => console.log('Lưu tiến trình thành công!'))
+            .then(() => {
+                console.log('Lưu tiến trình thành công!');
+                updateProgressTracker(); // Cập nhật tiến trình sau khi lưu
+            })
             .catch(error => console.error('Lỗi khi lưu:', error));
     }
 
@@ -111,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         item.classList.toggle('completed', completed.has(item.dataset.name));
                     });
                 }
+                updateProgressTracker(); // Cập nhật tiến trình sau khi tải dữ liệu
             })
             .catch(error => console.error('Lỗi khi tải:', error));
     }
@@ -128,6 +151,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // === PHẦN THÊM MỚI: Hàm cập nhật bảng tiến trình ===
+    function updateProgressTracker() {
+    if (!progressCurrent) return;
+    const count = document.querySelectorAll('.champion-item.completed').length;
+    
+    let currentTier = tiers[0];
+    let nextTier = tiers[1];
+
+    for (let i = tiers.length - 1; i >= 0; i--) {
+        if (count >= tiers[i].threshold) {
+            currentTier = tiers[i];
+            nextTier = tiers[i + 1] || currentTier;
+            break;
+        }
+    }
+
+    const progressTierName = document.getElementById('progress-tier-name');
+
+    // Cập nhật giao diện
+    progressTierIcon.src = currentTier.icon;
+    progressTierIcon.alt = currentTier.vietnameseName; // Dùng tên tiếng Việt cho alt text
+
+    // Cập nhật tên bậc và màu chữ
+    progressTierName.textContent = currentTier.vietnameseName.toUpperCase(); // Sử dụng tên tiếng Việt
+    progressTierName.className = `tier-name tier-${currentTier.name.toLowerCase()}`; // Giữ tên tiếng Anh cho class CSS
+
+    // Cập nhật số liệu và thanh tiến trình
+    progressCurrent.textContent = count;
+    
+    if (currentTier.threshold === nextTier.threshold) {
+        progressNextGoal.textContent = currentTier.threshold;
+        progressBar.style.width = '100%';
+    } else {
+        progressNextGoal.textContent = nextTier.threshold;
+        const progressInTier = count - currentTier.threshold;
+        const tierRange = nextTier.threshold - currentTier.threshold;
+        const percentage = (progressInTier / tierRange) * 100;
+        progressBar.style.width = `${percentage}%`;
+    }
+}
+    
     // 7. HÀM RENDER TƯỚNG
     async function renderChampions() {
         if (Object.keys(allChampionsData).length === 0) {

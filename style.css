@@ -26,7 +26,15 @@ body {
 }
 
 header {
-    /* CSS cho header */
+    /* THAY ĐỔI: Chuyển sang flexbox để chứa bảng tiến trình */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Căn các item lên trên cùng */
+    padding: 0 20px;
+}
+
+.header-content {
+    flex-grow: 1;
 }
 
 h1 {
@@ -196,4 +204,110 @@ main {
     background-color: #dc3545;
     color: white;
     cursor: pointer;
+}
+
+/* === PHẦN CẬP NHẬT: CSS cho Bảng Tiến Trình chi tiết === */
+#progress-tracker.challenge-card {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 300px; /* Tăng chiều rộng */
+    background-color: #1a262b; /* Màu nền tối */
+    border: 1px solid #c89b3c; /* Viền vàng */
+    border-radius: 4px;
+    padding: 10px;
+    color: #a09b8c; /* Màu chữ phụ */
+    font-family: 'Spiegel', sans-serif; /* Font chữ giống trong game (nếu có) */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.challenge-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #31271e;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.challenge-mode-icon {
+    opacity: 0.7;
+}
+
+.challenge-body {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#progress-tier-icon {
+    width: 64px;
+    height: 64px;
+}
+
+.challenge-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.challenge-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f0e6d2; /* Màu chữ chính */
+    margin: 0;
+}
+
+.tier-name {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 2px 0;
+}
+
+/* Các màu cho từng bậc */
+.tier-iron { color: #51484a; }
+.tier-bronze { color: #8c513a; }
+.tier-silver { color: #80989d; }
+.tier-gold { color: #cd7f32; }
+.tier-platinum { color: #4e9996; }
+.tier-diamond { color: #576bce; }
+.tier-master { color: #9a4eb5; }
+
+
+.challenge-description {
+    font-size: 12px;
+    margin: 4px 0 0 0;
+}
+
+.challenge-progress {
+    margin-top: 10px;
+    position: relative;
+}
+
+#progress-bar-container {
+    width: 100%;
+    height: 18px;
+    background-color: #111;
+    border: 1px solid #463714;
+    border-radius: 2px;
+}
+
+#progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: #00a8b5; /* Màu thanh tiến trình */
+    transition: width 0.5s ease;
+}
+
+#progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
 }
