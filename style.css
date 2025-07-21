@@ -25,9 +25,12 @@ body {
 #app {
     max-width: 1200px;
     margin: auto;
-    background-color: var(--card-bg-color); /* THÊM LẠI DÒNG NÀY */
+    /* THAY ĐỔI: Chuyển sang màu nền tối, bán trong suốt */
+    background-color: rgba(10, 20, 30, 0.75); 
+    /* THÊM VÀO: Thêm viền vàng mờ để nổi bật */
+    border: 1px solid rgba(200, 155, 60, 0.3);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Tăng bóng đổ cho đẹp hơn */
     overflow: hidden;
 }
 
@@ -49,6 +52,11 @@ h1 {
     margin: 0 0 20px 0;
     font-size: 24px;
     color: var(--primary-color);
+    /* Áp dụng font chữ mới */
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .controls {
@@ -100,7 +108,7 @@ main {
 
 .champion-name {
     font-size: 11px;
-    color: #4b4f56;
+    color: #a09b8c; /* THAY ĐỔI: Chuyển sang màu chữ sáng */
     text-align: center;
     width: 100%;
     white-space: nowrap;
