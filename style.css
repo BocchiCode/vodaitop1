@@ -12,9 +12,6 @@ body {
     font-family: 'Roboto', sans-serif;
     color: var(--text-color);
     margin: 0;
-    padding: 20px;
-    
-    /* Đảm bảo đường dẫn đến ảnh là chính xác */
     background-image: url('images/background.png');
     background-size: cover;
     background-position: center;
@@ -22,282 +19,129 @@ body {
     background-attachment: fixed;
     position: relative; 
 }
-#app {
-    max-width: 1200px;
-    margin: auto;
-    /* THAY ĐỔI: Chuyển sang màu nền tối, bán trong suốt */
-    background-color: rgba(10, 20, 30, 0.75); 
-    /* THÊM VÀO: Thêm viền vàng mờ để nổi bật */
-    border: 1px solid rgba(200, 155, 60, 0.3);
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Tăng bóng đổ cho đẹp hơn */
-    overflow: hidden;
-}
 
-header {
-    /* THAY ĐỔI: Chuyển sang flexbox để chứa bảng tiến trình */
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* Căn các item lên trên cùng */
-    padding: 0 20px;
-}
-
-.header-content {
-    flex-grow: 1;
-}
-
-h1 {
-    text-align: center;
-    padding-top: 20px;
-    margin: 0 0 20px 0;
-    font-size: 24px;
-    color: var(--primary-color);
-    /* Áp dụng font chữ mới */
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.controls {
-    padding: 0 20px 20px 20px;
-}
-
-#search-input {
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 16px;
-    border-radius: 20px;
-    border: 1px solid var(--border-color);
-    box-sizing: border-box;
-}
-
-/* --- Lưới hiển thị tướng --- */
-main {
-    padding: 20px;
-}
-
-#champion-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
-    gap: 15px; 
-    justify-content: center;
-}
-
-/* Khung chứa bên ngoài */
-.champion-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px; 
-    cursor: pointer;
-    width: 70px; 
-    margin: 0 auto;
-}
-
-/* Icon thật sự bên trong */
-.champion-icon {
-    width: var(--icon-display-size);
-    height: var(--icon-display-size);
-    background-repeat: no-repeat;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    position: relative;
-}
-
-.champion-name {
-    font-size: 11px;
-    color: #a09b8c; /* THAY ĐỔI: Chuyển sang màu chữ sáng */
-    text-align: center;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.champion-item:hover .champion-icon {
-    filter: brightness(1.1);
-}
-
-/* --- Hiệu ứng khi đã hoàn thành (Sửa đổi để giống ảnh) --- */
-
-/* Lớp phủ màu xanh lá đậm */
-.champion-icon::after {
-    content: ''; /* Xóa dấu tick ✔ mặc định */
-    position: absolute;
+body::before {
+    content: '';
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    
-    /* Màu xanh lá đậm như trong ảnh, che phủ nhiều */
-    background-color: rgba(14, 113, 56, 0.75); 
-    
-    opacity: 0; /* Mặc định ẩn */
-    transition: opacity 0.3s ease;
-    z-index: 2;
+    background-color: rgba(10, 15, 20, 0.7); 
+    z-index: -1; 
 }
 
-/* Dấu tick ✔ màu trắng được tạo riêng */
-.champion-icon::before {
-    content: '✔';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: calc(var(--icon-display-size) * 0.6);
-    text-shadow: 0 0 5px black;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 3; /* Nằm trên lớp phủ màu xanh */
-}
-
-/* Khi có class .completed, hiển thị cả hai lớp phủ */
-.completed .champion-icon::after,
-.completed .champion-icon::before {
-    opacity: 1;
-}
-
-/* --- CSS cho khu vực xác thực --- */
-#auth-container {
-    padding: 0 20px 20px 20px;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 20px;
-}
-
-#login-register-forms {
-    display: flex;
-    justify-content: space-around;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-#login-register-forms form {
-    min-width: 250px;
-    flex: 1;
+/* --- MÀN HÌNH ĐĂNG NHẬP --- */
+#login-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-#login-register-forms h3 {
-    margin: 0 0 5px 0;
-    text-align: center;
+#login-container h1 {
+    font-size: 64px;
+    color: #c89b3c; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
 }
 
-#login-register-forms input, #login-register-forms button {
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: 1px solid var(--border-color);
-}
+#login-register-forms { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; background-color: rgba(10, 20, 30, 0.75); padding: 30px; border: 1px solid rgba(200, 155, 60, 0.3); border-radius: 8px; }
+#login-register-forms form { min-width: 280px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+#login-register-forms h3 { margin: 0 0 10px 0; text-align: center; color: #f0e6d2; font-size: 20px; }
+#login-register-forms input, #login-register-forms button { padding: 12px; font-size: 14px; border-radius: 5px; border: 1px solid #4f545c; background-color: #1a262b; color: #f0e6d2; }
+#login-register-forms input::placeholder { color: #a09b8c; }
+#login-register-forms button { background-color: var(--primary-color); color: white; cursor: pointer; border: none; font-weight: bold; }
 
-#login-register-forms button {
-    background-color: var(--primary-color);
-    color: white;
-    cursor: pointer;
-    border: none;
-}
-
-#user-info {
-    text-align: center;
-}
-
-#user-info p {
-    font-size: 16px;
-    margin-top: 0;
-}
-
-#logout-button {
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: none;
-    background-color: #dc3545;
-    color: white;
-    cursor: pointer;
-}
-
-/* === PHẦN CẬP NHẬT: CSS cho Bảng Tiến Trình chi tiết === */
-#progress-tracker.challenge-card {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 300px; /* Tăng chiều rộng */
-    background-color: #1a262b; /* Màu nền tối */
-    border: 1px solid #c89b3c; /* Viền vàng */
-    border-radius: 4px;
-    padding: 10px;
-    color: #a09b8c; /* Màu chữ phụ */
-    font-family: 'Spiegel', sans-serif; /* Font chữ giống trong game (nếu có) */
+/* --- MÀN HÌNH ỨNG DỤNG CHÍNH --- */
+#app {
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: rgba(10, 20, 30, 0.75); 
+    border: 1px solid rgba(200, 155, 60, 0.3);
+    border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
 
-.challenge-header {
+#app header {
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    text-transform: uppercase;
-    border-bottom: 1px solid #31271e;
-    padding-bottom: 8px;
-    margin-bottom: 10px;
+    padding: 20px;
+    border-bottom: 1px solid rgba(200, 155, 60, 0.3);
 }
 
-.challenge-mode-icon {
-    opacity: 0.7;
-}
-
-.challenge-body {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-#progress-tier-icon {
-    width: 64px;
-    height: 64px;
-}
-
-.challenge-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.challenge-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #f0e6d2; /* Màu chữ chính */
+#app h1 {
+    padding: 0;
     margin: 0;
-}
-
-.tier-name {
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 48px;
+    color: #c89b3c; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
     text-transform: uppercase;
-    margin: 2px 0;
+    letter-spacing: 2px;
 }
 
-/* Các màu cho từng bậc */
-.tier-iron { color: #51484a; }
-.tier-bronze { color: #8c513a; }
-.tier-silver { color: #80989d; }
-.tier-gold { color: #cd7f32; }
-.tier-platinum { color: #4e9996; }
-.tier-diamond { color: #576bce; }
-.tier-master { color: #9a4eb5; }
+main { padding: 20px; }
+.controls { padding-bottom: 20px; }
+#search-input { width: 100%; padding: 10px 15px; font-size: 16px; border-radius: 20px; border: 1px solid #4f545c; background-color: #1a262b; color: #f0e6d2; }
 
+#champion-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 15px; justify-content: center; }
+.champion-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; width: 70px; margin: 0 auto; }
+.champion-icon { width: var(--icon-display-size); height: var(--icon-display-size); background-repeat: no-repeat; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.2); position: relative; background-color: #0a1018; }
+.champion-name { font-size: 11px; color: #a09b8c; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.champion-item:hover .champion-icon { filter: brightness(1.1); }
+.champion-icon::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(14, 113, 56, 0.75); opacity: 0; transition: opacity 0.3s ease; z-index: 2; }
+.champion-icon::before { content: '✔'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: calc(var(--icon-display-size) * 0.6); text-shadow: 0 0 5px black; opacity: 0; transition: opacity 0.3s ease; z-index: 3; }
+.completed .champion-icon::after, .completed .champion-icon::before { opacity: 1; }
 
-.challenge-description {
-    font-size: 12px;
-    margin: 4px 0 0 0;
+/* --- CÁC THÀNH PHẦN Ở GÓC MÀN HÌNH --- */
+#user-menu-container, #progress-tracker.challenge-card {
+    position: fixed;
+    top: 20px;
+    z-index: 100;
 }
+
+#user-menu-container {
+    left: 20px;
+}
+
+#progress-tracker.challenge-card {
+    right: 20px;
+}
+
+#user-icon { width: 36px; height: 36px; padding: 8px; background-color: rgba(10, 20, 30, 0.75); border: 1px solid rgba(200, 155, 60, 0.5); border-radius: 50%; cursor: pointer; color: #c89b3c; transition: background-color 0.2s ease; }
+#user-icon:hover { background-color: rgba(30, 40, 50, 0.9); }
+#user-info-dropdown { display: none; position: absolute; top: 110%; left: 0; background-color: #1a262b; border: 1px solid #c89b3c; border-radius: 8px; padding: 15px; width: 250px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); }
+#user-menu-container:hover #user-info-dropdown { display: block; }
+#user-info { display: block; }
+#user-info p { margin: 0 0 15px 0; font-size: 16px; color: #f0e6d2; border-bottom: 1px solid #31271e; padding-bottom: 10px; }
+#user-info #logout-button { width: 100%; padding: 8px 15px; font-size: 14px; border-radius: 5px; border: 1px solid #c89b3c; background-color: transparent; color: #c89b3c; cursor: pointer; transition: all 0.2s ease; }
+#user-info #logout-button:hover { background-color: #c89b3c; color: #111; }
+
+#progress-tracker.challenge-card {
+    width: 300px; background-color: #1a262b; border: 1px solid #c89b3c;
+    border-radius: 4px; padding: 10px; color: #a09b8c; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    display: flex; flex-direction: column; gap: 10px;
+}
+.challenge-body { display: flex; align-items: center; gap: 15px; }
+#progress-tier-icon { width: 64px; height: 64px; flex-shrink: 0; }
+.challenge-info { display: flex; flex-direction: column; }
+.challenge-title { font-size: 18px; font-weight: bold; color: #f0e6d2; margin: 0; line-height: 1.2; }
 
 .challenge-progress {
-    margin-top: 10px;
     position: relative;
+    width: 100%;
+    margin-top: 10px; /* Thêm khoảng cách với phần trên */
 }
 
 #progress-bar-container {
@@ -306,13 +150,15 @@ main {
     background-color: #111;
     border: 1px solid #463714;
     border-radius: 2px;
+    overflow: hidden;
 }
 
 #progress-bar {
-    width: 0%;
+    width: 0%; /* JavaScript sẽ cập nhật giá trị này */
     height: 100%;
-    background-color: #00a8b5; /* Màu thanh tiến trình */
+    background-color: #00a8b5;
     transition: width 0.5s ease;
+    border-radius: 2px;
 }
 
 #progress-text {
@@ -324,19 +170,6 @@ main {
     font-size: 12px;
     font-weight: bold;
     text-shadow: 1px 1px 2px black;
-}
-
-/* Lớp phủ làm mờ background */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
-    
-    /* Màu đen với độ trong suốt 70%. */
-    background-color: rgba(10, 15, 20, 0.7); 
-    
-    z-index: -1; 
+    text-align: center;
 }

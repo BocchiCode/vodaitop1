@@ -16,17 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const db = firebase.firestore();
 
     // 3. LẤY CÁC THÀNH PHẦN GIAO DIỆN
+    const loginContainer = document.getElementById('login-container');
+    const appContainer = document.getElementById('app');
     const grid = document.getElementById('champion-grid');
     const searchInput = document.getElementById('search-input');
-    
     const userInfoDiv = document.getElementById('user-info');
     const userEmailSpan = document.getElementById('user-email');
     const logoutButton = document.getElementById('logout-button');
-    const loginRegisterFormsDiv = document.getElementById('login-register-forms');
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
-    
-    // === PHẦN THÊM MỚI: Lấy các thành phần của bảng tiến trình ===
+    const userMenuContainer = document.getElementById('user-menu-container');
+    const userInfoDropdown = document.getElementById('user-info-dropdown');
+    const progressTracker = document.getElementById('progress-tracker');
     const progressTierIcon = document.getElementById('progress-tier-icon');
     const progressCurrent = document.getElementById('progress-current');
     const progressNextGoal = document.getElementById('progress-next-goal');
@@ -36,24 +37,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null;
     let latestVersion = '';
 
-    // === PHẦN THÊM MỚI: Dữ liệu về các bậc thành tựu ===
     const tiers = [
-    { name: 'Unranked', vietnameseName: 'Chưa xếp hạng', threshold: 0, icon: 'https://raw.githubusercontent.com/Mar-Es/lol-challenges/main/src/assets/images/Challenge_Tokens/602002_IRON.png' },
-    { name: 'Iron', vietnameseName: 'Sắt', threshold: 3, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-IRON.png' },
-    { name: 'Bronze', vietnameseName: 'Đồng', threshold: 6, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-BRONZE.png' },
-    { name: 'Silver', vietnameseName: 'Bạc', threshold: 12, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-SILVER.png' },
-    { name: 'Gold', vietnameseName: 'Vàng', threshold: 20, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-GOLD.png' },
-    { name: 'Platinum', vietnameseName: 'Bạch Kim', threshold: 32, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-PLATINUM.png' },
-    { name: 'Diamond', vietnameseName: 'Kim Cương', threshold: 45, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-DIAMOND.png' },
-    { name: 'Master', vietnameseName: 'Cao Thủ', threshold: 60, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-MASTER.png' }
-];
+        { name: 'Unranked', vietnameseName: 'Chưa xếp hạng', threshold: 0, icon: 'https://raw.githubusercontent.com/Mar-Es/lol-challenges/main/src/assets/images/Challenge_Tokens/602002_IRON.png' },
+        { name: 'Iron', vietnameseName: 'Sắt', threshold: 3, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-IRON.png' },
+        { name: 'Bronze', vietnameseName: 'Đồng', threshold: 6, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-BRONZE.png' },
+        { name: 'Silver', vietnameseName: 'Bạc', threshold: 12, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-SILVER.png' },
+        { name: 'Gold', vietnameseName: 'Vàng', threshold: 20, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-GOLD.png' },
+        { name: 'Platinum', vietnameseName: 'Bạch Kim', threshold: 32, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-PLATINUM.png' },
+        { name: 'Diamond', vietnameseName: 'Kim Cương', threshold: 45, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-DIAMOND.png' },
+        { name: 'Master', vietnameseName: 'Cao Thủ', threshold: 60, icon: 'https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-MASTER.png' }
+    ];
 
-    // 4. HÀM LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP
+    userInfoDropdown.appendChild(userInfoDiv);
+
+    // 4. HÀM LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP (LOGIC MỚI)
     auth.onAuthStateChanged(user => {
         if (user) {
+            // Người dùng đã đăng nhập
             currentUser = user;
-            userInfoDiv.style.display = 'block';
-            loginRegisterFormsDiv.style.display = 'none';
+            loginContainer.style.display = 'none';
+            appContainer.style.display = 'block';
+            userMenuContainer.style.display = 'block';
+            progressTracker.style.display = 'flex';
             userEmailSpan.textContent = user.email;
 
             renderChampions().then(() => {
@@ -61,141 +66,61 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
         } else {
+            // Người dùng chưa đăng nhập
             currentUser = null;
-            userInfoDiv.style.display = 'none';
-            loginRegisterFormsDiv.style.display = 'block';
-            grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Vui lòng đăng nhập để xem tiến trình.</p>';
+            loginContainer.style.display = 'flex';
+            appContainer.style.display = 'none';
+            userMenuContainer.style.display = 'none';
+            progressTracker.style.display = 'none';
         }
     });
 
-    // 5. CÁC HÀM XỬ LÝ SỰ KIỆN
-    registerForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const email = document.getElementById('register-email').value;
-        const password = document.getElementById('register-password').value;
-        auth.createUserWithEmailAndPassword(email, password)
-            .then(userCredential => {
-                console.log('Đăng ký thành công!', userCredential.user);
-                registerForm.reset();
-            })
-            .catch(error => alert('Lỗi Đăng Ký: ' + error.message));
-    });
-
-    loginForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        auth.signInWithEmailAndPassword(email, password)
-            .then(userCredential => {
-                console.log('Đăng nhập thành công!', userCredential.user);
-                loginForm.reset();
-            })
-            .catch(error => alert('Lỗi Đăng Nhập: ' + error.message));
-    });
-
-    logoutButton.addEventListener('click', () => {
-        auth.signOut().then(() => console.log('Đã đăng xuất.'));
-    });
-
-    grid.addEventListener('click', e => {
-        if (!currentUser) return;
-        const item = e.target.closest('.champion-item');
-        if (!item) return;
-        item.classList.toggle('completed');
-        saveState(currentUser.uid);
-        updateProgressTracker(); // Cập nhật tiến trình khi click
-    });
-
+    // Các hàm xử lý sự kiện, lưu/tải dữ liệu và render giữ nguyên như cũ...
+    registerForm.addEventListener('submit', e => { e.preventDefault(); auth.createUserWithEmailAndPassword(document.getElementById('register-email').value, document.getElementById('register-password').value).then(cred => registerForm.reset()).catch(err => alert(err.message)); });
+    loginForm.addEventListener('submit', e => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value).then(cred => loginForm.reset()).catch(err => alert(err.message)); });
+    logoutButton.addEventListener('click', () => auth.signOut());
+    grid.addEventListener('click', e => { if (!currentUser) return; const item = e.target.closest('.champion-item'); if (item) { item.classList.toggle('completed'); saveState(currentUser.uid); } });
     searchInput.addEventListener('input', handleSearch);
 
-    // 6. CÁC HÀM CƠ BẢN
-    function saveState(userId) {
-        if (!userId) return;
-        const completedChampions = [];
-        document.querySelectorAll('.champion-item.completed').forEach(item => {
-            completedChampions.push(item.dataset.name);
-        });
-        db.collection('users').doc(userId).set({ completed: completedChampions })
-            .then(() => {
-                console.log('Lưu tiến trình thành công!');
-                updateProgressTracker(); // Cập nhật tiến trình sau khi lưu
-            })
-            .catch(error => console.error('Lỗi khi lưu:', error));
-    }
+    function saveState(userId) { if (!userId) return; const data = []; document.querySelectorAll('.champion-item.completed').forEach(i => data.push(i.dataset.name)); db.collection('users').doc(userId).set({ completed: data }).then(() => updateProgressTracker()); }
+    function loadState(userId) { if (!userId) return; db.collection('users').doc(userId).get().then(doc => { if (doc.exists) { const completed = new Set(doc.data().completed || []); document.querySelectorAll('.champion-item').forEach(i => i.classList.toggle('completed', completed.has(i.dataset.name))); } updateProgressTracker(); }); }
+    function handleSearch() { const q = searchInput.value.toLowerCase().trim(); document.querySelectorAll('.champion-item').forEach(i => { const n = i.title.toLowerCase(); i.style.display = n.includes(q) ? 'flex' : 'none'; }); }
 
-    function loadState(userId) {
-        if (!userId) return;
-        db.collection('users').doc(userId).get()
-            .then(doc => {
-                if (doc.exists) {
-                    const completed = new Set(doc.data().completed || []);
-                    document.querySelectorAll('.champion-item').forEach(item => {
-                        item.classList.toggle('completed', completed.has(item.dataset.name));
-                    });
-                }
-                updateProgressTracker(); // Cập nhật tiến trình sau khi tải dữ liệu
-            })
-            .catch(error => console.error('Lỗi khi tải:', error));
-    }
-
-    function handleSearch() {
-        const query = searchInput.value.toLowerCase().trim();
-        const allItems = document.querySelectorAll('.champion-item');
-        allItems.forEach(item => {
-            const championName = item.title.toLowerCase();
-            if (championName.includes(query)) {
-                item.style.display = 'flex';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    }
-
-    // === PHẦN THÊM MỚI: Hàm cập nhật bảng tiến trình ===
     function updateProgressTracker() {
-    if (!progressCurrent) return;
-    const count = document.querySelectorAll('.champion-item.completed').length;
-    
-    let currentTier = tiers[0];
-    let nextTier = tiers[1];
-
-    for (let i = tiers.length - 1; i >= 0; i--) {
-        if (count >= tiers[i].threshold) {
-            currentTier = tiers[i];
-            nextTier = tiers[i + 1] || currentTier;
-            break;
+        if (!progressCurrent) return;
+        const count = document.querySelectorAll('.champion-item.completed').length;
+        let currentTier = tiers[0];
+        let nextTier = tiers[1];
+        for (let i = tiers.length - 1; i >= 0; i--) {
+            if (count >= tiers[i].threshold) {
+                currentTier = tiers[i];
+                nextTier = tiers[i + 1] || currentTier;
+                break;
+            }
+        }
+        const progressTierName = document.getElementById('progress-tier-name');
+        progressTierIcon.src = currentTier.icon;
+        progressTierIcon.alt = currentTier.vietnameseName;
+        progressTierName.textContent = currentTier.vietnameseName.toUpperCase();
+        progressTierName.className = `tier-name tier-${currentTier.name.toLowerCase()}`;
+        progressCurrent.textContent = count;
+        if (currentTier.threshold === nextTier.threshold) {
+            progressNextGoal.textContent = currentTier.threshold;
+            progressBar.style.width = '100%';
+        } else {
+            progressNextGoal.textContent = nextTier.threshold;
+            const progressInTier = count - currentTier.threshold;
+            const tierRange = nextTier.threshold - currentTier.threshold;
+            const percentage = (progressInTier / tierRange) * 100;
+            progressBar.style.width = `${percentage}%`;
         }
     }
-
-    const progressTierName = document.getElementById('progress-tier-name');
-
-    // Cập nhật giao diện
-    progressTierIcon.src = currentTier.icon;
-    progressTierIcon.alt = currentTier.vietnameseName; // Dùng tên tiếng Việt cho alt text
-
-    // Cập nhật tên bậc và màu chữ
-    progressTierName.textContent = currentTier.vietnameseName.toUpperCase(); // Sử dụng tên tiếng Việt
-    progressTierName.className = `tier-name tier-${currentTier.name.toLowerCase()}`; // Giữ tên tiếng Anh cho class CSS
-
-    // Cập nhật số liệu và thanh tiến trình
-    progressCurrent.textContent = count;
     
-    if (currentTier.threshold === nextTier.threshold) {
-        progressNextGoal.textContent = currentTier.threshold;
-        progressBar.style.width = '100%';
-    } else {
-        progressNextGoal.textContent = nextTier.threshold;
-        const progressInTier = count - currentTier.threshold;
-        const tierRange = nextTier.threshold - currentTier.threshold;
-        const percentage = (progressInTier / tierRange) * 100;
-        progressBar.style.width = `${percentage}%`;
-    }
-}
-    
-    // 7. HÀM RENDER TƯỚNG
     async function renderChampions() {
-        if (Object.keys(allChampionsData).length === 0) {
-            grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Đang tải danh sách tướng...</p>';
+        if (Object.keys(allChampionsData).length > 0) {
+            grid.innerHTML = ''; // Xóa để vẽ lại nếu cần
+        } else {
+            grid.innerHTML = '<p>Đang tải danh sách tướng...</p>';
             try {
                 const versionsResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
                 const versions = await versionsResponse.json();
@@ -204,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const json = await response.json();
                 allChampionsData = json.data;
             } catch (error) {
-                grid.innerHTML = '<p style="color: red; text-align: center; grid-column: 1 / -1;">Lỗi tải danh sách tướng.</p>';
+                grid.innerHTML = '<p style="color: red;">Lỗi tải danh sách tướng.</p>';
                 return;
             }
         }
@@ -213,24 +138,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const championNames = Object.keys(allChampionsData).sort();
         for (const name of championNames) {
             const champData = allChampionsData[name];
-            
             const item = document.createElement('div');
             item.className = 'champion-item';
             item.dataset.name = champData.id;
             item.title = champData.name;
-
             const iconDiv = document.createElement('div');
             iconDiv.className = 'champion-icon';
             iconDiv.style.backgroundImage = `url(https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/sprite/${champData.image.sprite})`;
             iconDiv.style.backgroundPosition = `-${champData.image.x}px -${champData.image.y}px`;
-            
             const nameSpan = document.createElement('span');
             nameSpan.className = 'champion-name';
             nameSpan.textContent = champData.name;
-            
             item.appendChild(iconDiv);
             item.appendChild(nameSpan);
-            
             grid.appendChild(item);
         }
     }

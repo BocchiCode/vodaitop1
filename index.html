@@ -12,61 +12,61 @@
 </head>
 <body>
 
-    <div id="app">
-        <header>
-            <div class="header-content">
-                <h1>Võ Đài Checklist</h1>
-
-                <div id="auth-container">
-                    <div id="user-info" style="display: none;">
-                        <p>Xin chào, <span id="user-email"></span>!</p>
-                        <button id="logout-button">Đăng xuất</button>
-                    </div>
-
-                    <div id="login-register-forms">
-                        <form id="login-form">
-                            <h3>Đăng nhập</h3>
-                            <input type="email" id="login-email" placeholder="Email" required>
-                            <input type="password" id="login-password" placeholder="Mật khẩu" required>
-                            <button type="submit">Đăng nhập</button>
-                        </form>
-
-                        <form id="register-form">
-                            <h3>Đăng ký</h3>
-                            <input type="email" id="register-email" placeholder="Email" required>
-                            <input type="password" id="register-password" placeholder="Mật khẩu" required>
-                            <button type="submit">Đăng ký</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="controls">
-                    <input type="text" id="search-input" placeholder="Tìm tướng...">
-                </div>
+    <div id="user-menu-container" style="display: none;">
+        <svg id="user-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <div id="user-info-dropdown">
+            <div id="user-info">
+                <p>Xin chào, <span id="user-email"></span>!</p>
+                <button id="logout-button">Đăng xuất</button>
             </div>
+        </div>
+    </div>
+    
+    <div id="progress-tracker" class="challenge-card" style="display: none;">
+        <div class="challenge-body">
+            <img id="progress-tier-icon" src="https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-IRON.png" alt="Bậc">
+            <div class="challenge-info">
+                <h3 class="challenge-title">THÍCH NGHI VỚI MỌI TÌNH HUỐNG</h3>
+                <span id="progress-tier-name" class="tier-name">SẮT</span>
+            </div>
+        </div>
+        <div class="challenge-progress">
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="progress-text">
+                <span id="progress-current">0</span> / <span id="progress-next-goal">3</span>
+            </div>
+        </div>
+    </div>
 
-            <div id="progress-tracker" class="challenge-card">
-    <div class="challenge-body">
-        <img id="progress-tier-icon" src="https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-IRON.png" alt="Bậc">
-        <div class="challenge-info">
-            <h3 class="challenge-title">THÍCH NGHI VỚI MỌI TÌNH HUỐNG</h3>
-            <span id="progress-tier-name" class="tier-name">SẮT</span>
-            <p class="challenge-description">Về nhất trong chế độ Võ Đài với các tướng khác nhau.</p>
+    <div id="login-container">
+        <h1>Võ Đài Checklist</h1>
+        <div id="login-register-forms">
+            <form id="login-form">
+                <h3>Đăng nhập</h3>
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Mật khẩu" required>
+                <button type="submit">Đăng nhập</button>
+            </form>
+            <form id="register-form">
+                <h3>Đăng ký</h3>
+                <input type="email" id="register-email" placeholder="Email" required>
+                <input type="password" id="register-password" placeholder="Mật khẩu" required>
+                <button type="submit">Đăng ký</button>
+            </form>
         </div>
     </div>
-    <div class="challenge-progress">
-        <div id="progress-bar-container">
-            <div id="progress-bar"></div>
-        </div>
-        <div id="progress-text">
-            <span id="progress-current">0</span> / <span id="progress-next-goal">3</span>
-        </div>
-    </div>
-</div>
+
+    <div id="app" style="display: none;">
+        <header>
+            <h1>Võ Đài Checklist</h1>
         </header>
-
         <main>
-            <div id="champion-grid">
-                </div>
+            <div class="controls">
+                <input type="text" id="search-input" placeholder="Tìm tướng...">
+            </div>
+            <div id="champion-grid"></div>
         </main>
     </div>
 
