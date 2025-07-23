@@ -65,23 +65,22 @@ body::before {
     max-width: 1200px;
     margin: 20px auto;
     background-color: rgba(10, 20, 30, 0.75); 
-    border: 1px solid rgba(200, 155, 60, 0.3);
-    border-radius: 8px;
+    border: 1px solid #c89b3c;
+    border-radius: 4px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     overflow: hidden;
 }
 
+/* === BỐ CỤC HEADER === */
 #app header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 20px;
-    border-bottom: 1px solid rgba(200, 155, 60, 0.3);
+    border-bottom: 1px solid #c89b3c;
 }
 
 #app h1 {
+    text-align: center;
     padding: 0;
-    margin: 0;
+    margin: 0 0 20px 0; /* Thêm margin bottom để tạo khoảng cách với thanh tìm kiếm */
     font-size: 48px;
     color: #c89b3c; 
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
@@ -92,10 +91,31 @@ body::before {
 }
 
 main { padding: 20px; }
-.controls { padding-bottom: 20px; }
-#search-input { width: 100%; padding: 10px 15px; font-size: 16px; border-radius: 20px; border: 1px solid #4f545c; background-color: #1a262b; color: #f0e6d2; }
+.controls { 
+    /* Bỏ padding-bottom vì đã có padding ở main */
+}
+#search-input { 
+    width: 100%; 
+    padding: 12px 20px; /* Tăng padding cho đẹp hơn */
+    font-size: 16px; 
+    border-radius: 6px; /* Bo góc ít hơn cho hợp style */
+    border: 1px solid #4f545c; 
+    background-color: #1a262b; 
+    color: #f0e6d2; 
+    box-sizing: border-box;
+}
+#search-input::placeholder {
+    color: #a09b8c;
+}
 
-#champion-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 15px; justify-content: center; }
+
+#champion-grid { 
+    margin-top: 20px; /* Thêm khoảng cách với thanh tìm kiếm */
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
+    gap: 15px; 
+    justify-content: center; 
+}
 .champion-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; width: 70px; margin: 0 auto; }
 .champion-icon { width: var(--icon-display-size); height: var(--icon-display-size); background-repeat: no-repeat; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.2); position: relative; background-color: #0a1018; }
 .champion-name { font-size: 11px; color: #a09b8c; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -137,39 +157,18 @@ main { padding: 20px; }
 #progress-tier-icon { width: 64px; height: 64px; flex-shrink: 0; }
 .challenge-info { display: flex; flex-direction: column; }
 .challenge-title { font-size: 18px; font-weight: bold; color: #f0e6d2; margin: 0; line-height: 1.2; }
+.tier-name { font-size: 14px; font-weight: bold; text-transform: uppercase; margin: 2px 0; }
+.tier-iron { color: #51484a; } .tier-bronze { color: #8c513a; } .tier-silver { color: #80989d; } .tier-gold { color: #cd7f32; } .tier-platinum { color: #4e9996; } .tier-diamond { color: #576bce; } .tier-master { color: #9a4eb5; }
+.challenge-description { font-size: 12px; margin: 4px 0 0 0; }
+.challenge-progress { position: relative; width: 100%; }
+#progress-bar-container { width: 100%; height: 18px; background-color: #111; border: 1px solid #463714; border-radius: 2px; overflow: hidden; }
+#progress-bar { width: 0%; height: 100%; background-color: #00a8b5; transition: width 0.5s ease; border-radius: 2px; }
+#progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px black; width: 100%; text-align: center; }
 
-.challenge-progress {
-    position: relative;
-    width: 100%;
-    margin-top: 10px; /* Thêm khoảng cách với phần trên */
-}
-
-#progress-bar-container {
-    width: 100%;
-    height: 18px;
-    background-color: #111;
-    border: 1px solid #463714;
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-#progress-bar {
-    width: 0%; /* JavaScript sẽ cập nhật giá trị này */
-    height: 100%;
-    background-color: #00a8b5;
-    transition: width 0.5s ease;
-    border-radius: 2px;
-}
-
-#progress-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
+.challenge-description {
     font-size: 12px;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px black;
-    width: 100%;
-    text-align: center;
+    color: #a09b8c; /* Màu chữ xám nhạt */
+    margin: 4px 0 0 0; /* Tạo một chút khoảng cách với dòng trên */
+    line-height: 1.4; /* Giãn dòng cho dễ đọc */
+    font-weight: normal;
 }
