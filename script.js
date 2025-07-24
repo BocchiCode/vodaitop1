@@ -83,7 +83,37 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', handleSearch);
 
     function saveState(userId) { if (!userId) return; const data = []; document.querySelectorAll('.champion-item.completed').forEach(i => data.push(i.dataset.name)); db.collection('users').doc(userId).set({ completed: data }).then(() => updateProgressTracker()); }
-    function loadState(userId) { if (!userId) return; db.collection('users').doc(userId).get().then(doc => { if (doc.exists) { const completed = new Set(doc.data().completed || []); document.querySelectorAll('.champion-item').forEach(i => i.classList.toggle('completed', completed.has(i.dataset.name))); } updateProgressTracker(); }); }
+    function loadState(userId) {
+    if (!userId) return;
+
+    // BƯỚC 1: "Dọn dẹp" giao diện
+    // Xóa class 'completed' khỏi tất cả các tướng trước khi làm gì khác.
+    // Điều này đảm bảo người dùng mới sẽ bắt đầu với một checklist trống.
+    document.querySelectorAll('.champion-item').forEach(item => {
+        item.classList.remove('completed');
+    });
+
+    // BƯỚC 2: Tải dữ liệu của người dùng từ Firestore
+    db.collection('users').doc(userId).get()
+        .then(doc => {
+            // BƯỚC 3: Nếu có dữ liệu cũ, áp dụng lại lên giao diện
+            if (doc.exists) {
+                const completed = new Set(doc.data().completed || []);
+                document.querySelectorAll('.champion-item').forEach(item => {
+                    // classList.toggle(className, boolean)
+                    // Nếu tướng có trong danh sách đã lưu, thêm class 'completed'.
+                    // Nếu không, nó sẽ đảm bảo class 'completed' không có ở đó.
+                    item.classList.toggle('completed', completed.has(item.dataset.name));
+                });
+            }
+            // BƯỚC 4: Cập nhật bảng tiến trình dựa trên trạng thái cuối cùng của giao diện
+            updateProgressTracker(); 
+        })
+        .catch(error => {
+            console.error('Lỗi khi tải dữ liệu:', error);
+            updateProgressTracker(); // Vẫn cập nhật tiến trình kể cả khi có lỗi
+        });
+}
     function handleSearch() { const q = searchInput.value.toLowerCase().trim(); document.querySelectorAll('.champion-item').forEach(i => { const n = i.title.toLowerCase(); i.style.display = n.includes(q) ? 'flex' : 'none'; }); }
 
     function updateProgressTracker() {
