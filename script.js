@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. MÃ CẤU HÌNH FIREBASE
+    // --- KHAI BÁO BIẾN ---
     const firebaseConfig = {
       apiKey: "AIzaSyC1tip6vXpVovrCv7MvJ8T_dFK-kono_HI",
       authDomain: "vodaichecked.firebaseapp.com",
@@ -10,12 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
       measurementId: "G-TEXV6RQ1GV"
     };
 
-    // 2. KHỞI TẠO CÁC DỊCH VỤ FIREBASE
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // 3. LẤY CÁC THÀNH PHẦN GIAO DIỆN
     const loginContainer = document.getElementById('login-container');
     const appContainer = document.getElementById('app');
     const grid = document.getElementById('champion-grid');
@@ -25,9 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logout-button');
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
-    const userMenuContainer = document.getElementById('user-menu-container');
+    
+    // Lấy các vùng chứa mới
+    const leftSidebar = document.getElementById('left-sidebar');
     const userInfoDropdown = document.getElementById('user-info-dropdown');
-    const progressTracker = document.getElementById('progress-tracker');
+    
     const progressTierIcon = document.getElementById('progress-tier-icon');
     const progressCurrent = document.getElementById('progress-current');
     const progressNextGoal = document.getElementById('progress-next-goal');
@@ -50,15 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     userInfoDropdown.appendChild(userInfoDiv);
 
-    // 4. HÀM LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP (LOGIC MỚI)
+    // 4. HÀM LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP
     auth.onAuthStateChanged(user => {
         if (user) {
-            // Người dùng đã đăng nhập
             currentUser = user;
             loginContainer.style.display = 'none';
             appContainer.style.display = 'block';
-            userMenuContainer.style.display = 'block';
-            progressTracker.style.display = 'flex';
+            leftSidebar.style.display = 'flex'; // Hiện sidebar trái
             userEmailSpan.textContent = user.email;
 
             renderChampions().then(() => {
@@ -66,55 +64,53 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
         } else {
-            // Người dùng chưa đăng nhập
             currentUser = null;
             loginContainer.style.display = 'flex';
             appContainer.style.display = 'none';
-            userMenuContainer.style.display = 'none';
-            progressTracker.style.display = 'none';
+            leftSidebar.style.display = 'none'; // Ẩn sidebar trái
         }
     });
 
-    // Các hàm xử lý sự kiện, lưu/tải dữ liệu và render giữ nguyên như cũ...
+    // 5. CÁC HÀM XỬ LÝ SỰ KIỆN
     registerForm.addEventListener('submit', e => { e.preventDefault(); auth.createUserWithEmailAndPassword(document.getElementById('register-email').value, document.getElementById('register-password').value).then(cred => registerForm.reset()).catch(err => alert(err.message)); });
     loginForm.addEventListener('submit', e => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value).then(cred => loginForm.reset()).catch(err => alert(err.message)); });
     logoutButton.addEventListener('click', () => auth.signOut());
     grid.addEventListener('click', e => { if (!currentUser) return; const item = e.target.closest('.champion-item'); if (item) { item.classList.toggle('completed'); saveState(currentUser.uid); } });
     searchInput.addEventListener('input', handleSearch);
 
-    function saveState(userId) { if (!userId) return; const data = []; document.querySelectorAll('.champion-item.completed').forEach(i => data.push(i.dataset.name)); db.collection('users').doc(userId).set({ completed: data }).then(() => updateProgressTracker()); }
+    // 6. CÁC HÀM CƠ BẢN
+    function saveState(userId) {
+        if (!userId) return;
+        const completedChampions = [];
+        document.querySelectorAll('.champion-item.completed').forEach(item => { completedChampions.push(item.dataset.name); });
+        db.collection('users').doc(userId).set({ completed: completedChampions }).then(() => { updateProgressTracker(); });
+    }
+
     function loadState(userId) {
-    if (!userId) return;
-
-    // BƯỚC 1: "Dọn dẹp" giao diện
-    // Xóa class 'completed' khỏi tất cả các tướng trước khi làm gì khác.
-    // Điều này đảm bảo người dùng mới sẽ bắt đầu với một checklist trống.
-    document.querySelectorAll('.champion-item').forEach(item => {
-        item.classList.remove('completed');
-    });
-
-    // BƯỚC 2: Tải dữ liệu của người dùng từ Firestore
-    db.collection('users').doc(userId).get()
-        .then(doc => {
-            // BƯỚC 3: Nếu có dữ liệu cũ, áp dụng lại lên giao diện
+        if (!userId) return;
+        db.collection('users').doc(userId).get().then(doc => {
             if (doc.exists) {
                 const completed = new Set(doc.data().completed || []);
                 document.querySelectorAll('.champion-item').forEach(item => {
-                    // classList.toggle(className, boolean)
-                    // Nếu tướng có trong danh sách đã lưu, thêm class 'completed'.
-                    // Nếu không, nó sẽ đảm bảo class 'completed' không có ở đó.
                     item.classList.toggle('completed', completed.has(item.dataset.name));
                 });
             }
-            // BƯỚC 4: Cập nhật bảng tiến trình dựa trên trạng thái cuối cùng của giao diện
-            updateProgressTracker(); 
-        })
-        .catch(error => {
-            console.error('Lỗi khi tải dữ liệu:', error);
-            updateProgressTracker(); // Vẫn cập nhật tiến trình kể cả khi có lỗi
+            updateProgressTracker();
         });
-}
-    function handleSearch() { const q = searchInput.value.toLowerCase().trim(); document.querySelectorAll('.champion-item').forEach(i => { const n = i.title.toLowerCase(); i.style.display = n.includes(q) ? 'flex' : 'none'; }); }
+    }
+
+    function handleSearch() {
+        const query = searchInput.value.toLowerCase().trim();
+        const allItems = document.querySelectorAll('.champion-item');
+        allItems.forEach(item => {
+            const championName = item.title.toLowerCase();
+            if (championName.includes(query)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
 
     function updateProgressTracker() {
         if (!progressCurrent) return;
@@ -146,11 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // 7. HÀM RENDER TƯỚNG
     async function renderChampions() {
-        if (Object.keys(allChampionsData).length > 0) {
-            grid.innerHTML = ''; // Xóa để vẽ lại nếu cần
-        } else {
-            grid.innerHTML = '<p>Đang tải danh sách tướng...</p>';
+        if (Object.keys(allChampionsData).length > 0) {} 
+        else {
+            grid.innerHTML = '<p>Đang tải...</p>';
             try {
                 const versionsResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
                 const versions = await versionsResponse.json();

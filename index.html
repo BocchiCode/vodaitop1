@@ -20,36 +20,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="left-sidebar" style="display: none;">
+        <div id="user-menu-container">
+            <svg id="user-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <div id="user-info-dropdown">
+                <div id="user-info">
+                    <p>Xin chào, <span id="user-email"></span>!</p>
+                    <button id="logout-button">Đăng xuất</button>
+                </div>
+            </div>
+        </div>
 
-    <div id="user-menu-container" style="display: none;">
-        <svg id="user-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        <div id="user-info-dropdown">
-            <div id="user-info">
-                <p>Xin chào, <span id="user-email"></span>!</p>
-                <button id="logout-button">Đăng xuất</button>
+        <div id="trophy-menu-container">
+            <svg id="trophy-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+            <div id="progress-tracker" class="challenge-card">
+                <div class="challenge-body">
+                    <img id="progress-tier-icon" src="https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-IRON.png" alt="Bậc">
+                    <div class="challenge-info">
+                        <h3 class="challenge-title">THÍCH NGHI VỚI MỌI TÌNH HUỐNG</h3>
+                        <span id="progress-tier-name" class="tier-name">SẮT</span>
+                        <p class="challenge-description">Về nhất trong chế độ Võ Đài với các tướng khác nhau.</p>
+                    </div>
+                </div>
+                <div class="challenge-progress">
+                    <div id="progress-bar-container">
+                        <div id="progress-bar"></div>
+                    </div>
+                    <div id="progress-text">
+                        <span id="progress-current">0</span> / <span id="progress-next-goal">3</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
-    <div id="progress-tracker" class="challenge-card" style="display: none;">
-        <div class="challenge-body">
-            <img id="progress-tier-icon" src="https://ddragon.leagueoflegends.com/cdn/img/challenges-images/602002-IRON.png" alt="Bậc">
-            <div class="challenge-info">
-                <h3 class="challenge-title">THÍCH NGHI VỚI MỌI TÌNH HUỐNG</h3>
-                <span id="progress-tier-name" class="tier-name">SẮT</span>
-                <p class="challenge-description">Về nhất trong chế độ Võ Đài với các tướng khác nhau.</p>
-            </div>
-        </div>
-        <div class="challenge-progress">
-            <div id="progress-bar-container">
-                <div id="progress-bar"></div>
-            </div>
-            <div id="progress-text">
-                <span id="progress-current">0</span> / <span id="progress-next-goal">3</span>
-            </div>
-        </div>
-    </div>
-
     <div id="login-container">
         <h1>Võ Đài Checklist</h1>
         <div id="login-register-forms">
@@ -86,4 +90,6 @@
     <script src="script.js"></script>
     <script type='text/javascript' src='//packagebellysmoothly.com/24/dd/ed/24dded08da144102582748997e813e55.js'></script>
 </body>
+</html>
+</html>
 </html>
