@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- KHAI BÁO BIẾN ---
+    // 1. MÃ CẤU HÌNH FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyC1tip6vXpVovrCv7MvJ8T_dFK-kono_HI",
       authDomain: "vodaichecked.firebaseapp.com",
@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
       measurementId: "G-TEXV6RQ1GV"
     };
 
+    // 2. KHỞI TẠO CÁC DỊCH VỤ FIREBASE
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // 3. LẤY CÁC THÀNH PHẦN GIAO DIỆN
     const loginContainer = document.getElementById('login-container');
     const appContainer = document.getElementById('app');
     const grid = document.getElementById('champion-grid');
@@ -24,18 +26,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     
-    // Lấy các vùng chứa mới
     const leftSidebar = document.getElementById('left-sidebar');
+    const rightSidebar = document.getElementById('right-sidebar');
     const userInfoDropdown = document.getElementById('user-info-dropdown');
     
     const progressTierIcon = document.getElementById('progress-tier-icon');
     const progressCurrent = document.getElementById('progress-current');
     const progressNextGoal = document.getElementById('progress-next-goal');
     const progressBar = document.getElementById('progress-bar');
+    
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
 
     let allChampionsData = {};
     let currentUser = null;
     let latestVersion = '';
+    let unsubscribeChat;
 
     const tiers = [
         { name: 'Unranked', vietnameseName: 'Chưa xếp hạng', threshold: 0, icon: 'https://raw.githubusercontent.com/Mar-Es/lol-challenges/main/src/assets/images/Challenge_Tokens/602002_IRON.png' },
@@ -56,18 +63,24 @@ document.addEventListener('DOMContentLoaded', () => {
             currentUser = user;
             loginContainer.style.display = 'none';
             appContainer.style.display = 'block';
-            leftSidebar.style.display = 'flex'; // Hiện sidebar trái
+            leftSidebar.style.display = 'flex';
+            rightSidebar.style.display = 'flex';
             userEmailSpan.textContent = user.email;
 
             renderChampions().then(() => {
                 loadState(user.uid);
+                listenForChatMessages();
             });
 
         } else {
             currentUser = null;
             loginContainer.style.display = 'flex';
             appContainer.style.display = 'none';
-            leftSidebar.style.display = 'none'; // Ẩn sidebar trái
+            leftSidebar.style.display = 'none';
+            rightSidebar.style.display = 'none';
+            if (unsubscribeChat) {
+                unsubscribeChat();
+            }
         }
     });
 
@@ -77,6 +90,19 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutButton.addEventListener('click', () => auth.signOut());
     grid.addEventListener('click', e => { if (!currentUser) return; const item = e.target.closest('.champion-item'); if (item) { item.classList.toggle('completed'); saveState(currentUser.uid); } });
     searchInput.addEventListener('input', handleSearch);
+
+    chatForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const messageText = chatInput.value.trim();
+        if (messageText && currentUser) {
+            db.collection('chat-messages').add({
+                text: messageText,
+                userEmail: currentUser.email,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            chatInput.value = '';
+        }
+    });
 
     // 6. CÁC HÀM CƠ BẢN
     function saveState(userId) {
@@ -88,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadState(userId) {
         if (!userId) return;
+        document.querySelectorAll('.champion-item').forEach(item => { item.classList.remove('completed'); });
         db.collection('users').doc(userId).get().then(doc => {
             if (doc.exists) {
                 const completed = new Set(doc.data().completed || []);
@@ -142,6 +169,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    function listenForChatMessages() {
+        unsubscribeChat = db.collection('chat-messages')
+            .orderBy('timestamp', 'asc')
+            .limitToLast(50)
+            .onSnapshot(snapshot => {
+                if (!chatMessages) return;
+                chatMessages.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const message = doc.data();
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message');
+                    if (currentUser && message.userEmail === currentUser.email) {
+                        messageDiv.classList.add('mine');
+                    } else {
+                        messageDiv.classList.add('theirs');
+                    }
+                    messageDiv.innerHTML = `
+                        <div class="sender">${message.userEmail.split('@')[0]}</div>
+                        <div class="text">${message.text}</div>
+                    `;
+                    chatMessages.appendChild(messageDiv);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+    }
+
     // 7. HÀM RENDER TƯỚNG
     async function renderChampions() {
         if (Object.keys(allChampionsData).length > 0) {} 
