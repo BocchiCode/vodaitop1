@@ -2,7 +2,7 @@
 
 Một công cụ checklist để theo dõi top 1 trong chế độ Võ Đài (Arena) của Liên Minh Huyền Thoại, được xây dựng bằng JavaScript thuần và tích hợp Firebase để lưu trữ dữ liệu người dùng.
 
-**Link trang web:** (https://bocchicode.github.io/vodaitop1/)
+**Link trang web:** https://bocchicode.github.io/vodaichecklist/
 
 ## Tính năng chính
 * ✅ Checklist đầy đủ các tướng trong Liên Minh Huyền Thoại.
