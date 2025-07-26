@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. MÃ CẤU HÌNH FIREBASE
+    // --- KHAI BÁO BIẾN ---
     const firebaseConfig = {
       apiKey: "AIzaSyC1tip6vXpVovrCv7MvJ8T_dFK-kono_HI",
       authDomain: "vodaichecked.firebaseapp.com",
@@ -10,12 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
       measurementId: "G-TEXV6RQ1GV"
     };
 
-    // 2. KHỞI TẠO CÁC DỊCH VỤ FIREBASE
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // 3. LẤY CÁC THÀNH PHẦN GIAO DIỆN
     const loginContainer = document.getElementById('login-container');
     const appContainer = document.getElementById('app');
     const grid = document.getElementById('champion-grid');
@@ -38,6 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
+
+    // Lấy các nút lọc
+    const roleFilters = document.getElementById('role-filters');
+    let currentRoleFilter = 'all';
 
     let allChampionsData = {};
     let currentUser = null;
@@ -78,9 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             appContainer.style.display = 'none';
             leftSidebar.style.display = 'none';
             rightSidebar.style.display = 'none';
-            if (unsubscribeChat) {
-                unsubscribeChat();
-            }
+            if (unsubscribeChat) unsubscribeChat();
         }
     });
 
@@ -89,7 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', e => { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value).then(cred => loginForm.reset()).catch(err => alert(err.message)); });
     logoutButton.addEventListener('click', () => auth.signOut());
     grid.addEventListener('click', e => { if (!currentUser) return; const item = e.target.closest('.champion-item'); if (item) { item.classList.toggle('completed'); saveState(currentUser.uid); } });
-    searchInput.addEventListener('input', handleSearch);
+    
+    searchInput.addEventListener('input', applyFilters);
+    roleFilters.addEventListener('click', (e) => {
+        const button = e.target.closest('.filter-btn');
+        if (button) {
+            currentRoleFilter = button.dataset.role;
+            roleFilters.querySelector('.active').classList.remove('active');
+            button.classList.add('active');
+            applyFilters();
+        }
+    });
 
     chatForm.addEventListener('submit', e => {
         e.preventDefault();
@@ -105,33 +115,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 6. CÁC HÀM CƠ BẢN
-    function saveState(userId) {
-        if (!userId) return;
-        const completedChampions = [];
-        document.querySelectorAll('.champion-item.completed').forEach(item => { completedChampions.push(item.dataset.name); });
-        db.collection('users').doc(userId).set({ completed: completedChampions }).then(() => { updateProgressTracker(); });
-    }
-
-    function loadState(userId) {
-        if (!userId) return;
-        document.querySelectorAll('.champion-item').forEach(item => { item.classList.remove('completed'); });
-        db.collection('users').doc(userId).get().then(doc => {
-            if (doc.exists) {
-                const completed = new Set(doc.data().completed || []);
-                document.querySelectorAll('.champion-item').forEach(item => {
-                    item.classList.toggle('completed', completed.has(item.dataset.name));
-                });
-            }
-            updateProgressTracker();
-        });
-    }
-
-    function handleSearch() {
-        const query = searchInput.value.toLowerCase().trim();
+    function saveState(userId) { if (!userId) return; const data = []; document.querySelectorAll('.champion-item.completed').forEach(i => data.push(i.dataset.name)); db.collection('users').doc(userId).set({ completed: data }).then(() => { updateProgressTracker(); }); }
+    function loadState(userId) { if (!userId) return; document.querySelectorAll('.champion-item').forEach(i => i.classList.remove('completed')); db.collection('users').doc(userId).get().then(doc => { if (doc.exists) { const completed = new Set(doc.data().completed || []); document.querySelectorAll('.champion-item').forEach(i => i.classList.toggle('completed', completed.has(i.dataset.name))); } updateProgressTracker(); }); }
+    
+    function applyFilters() {
+        const searchQuery = searchInput.value.toLowerCase().trim();
         const allItems = document.querySelectorAll('.champion-item');
+
         allItems.forEach(item => {
-            const championName = item.title.toLowerCase();
-            if (championName.includes(query)) {
+            const champData = allChampionsData[item.dataset.name];
+            const champName = champData.name.toLowerCase();
+            const champRoles = champData.tags;
+
+            const nameMatch = champName.includes(searchQuery);
+            const roleMatch = (currentRoleFilter === 'all') || champRoles.includes(currentRoleFilter);
+
+            if (nameMatch && roleMatch) {
                 item.style.display = 'flex';
             } else {
                 item.style.display = 'none';
@@ -139,35 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateProgressTracker() {
-        if (!progressCurrent) return;
-        const count = document.querySelectorAll('.champion-item.completed').length;
-        let currentTier = tiers[0];
-        let nextTier = tiers[1];
-        for (let i = tiers.length - 1; i >= 0; i--) {
-            if (count >= tiers[i].threshold) {
-                currentTier = tiers[i];
-                nextTier = tiers[i + 1] || currentTier;
-                break;
-            }
-        }
-        const progressTierName = document.getElementById('progress-tier-name');
-        progressTierIcon.src = currentTier.icon;
-        progressTierIcon.alt = currentTier.vietnameseName;
-        progressTierName.textContent = currentTier.vietnameseName.toUpperCase();
-        progressTierName.className = `tier-name tier-${currentTier.name.toLowerCase()}`;
-        progressCurrent.textContent = count;
-        if (currentTier.threshold === nextTier.threshold) {
-            progressNextGoal.textContent = currentTier.threshold;
-            progressBar.style.width = '100%';
-        } else {
-            progressNextGoal.textContent = nextTier.threshold;
-            const progressInTier = count - currentTier.threshold;
-            const tierRange = nextTier.threshold - currentTier.threshold;
-            const percentage = (progressInTier / tierRange) * 100;
-            progressBar.style.width = `${percentage}%`;
-        }
-    }
+    function updateProgressTracker() { if (!progressCurrent) return; const count = document.querySelectorAll('.champion-item.completed').length; let currentTier = tiers[0]; let nextTier = tiers[1]; for (let i = tiers.length - 1; i >= 0; i--) { if (count >= tiers[i].threshold) { currentTier = tiers[i]; nextTier = tiers[i + 1] || currentTier; break; } } const progressTierName = document.getElementById('progress-tier-name'); progressTierIcon.src = currentTier.icon; progressTierIcon.alt = currentTier.vietnameseName; progressTierName.textContent = currentTier.vietnameseName.toUpperCase(); progressTierName.className = `tier-name tier-${currentTier.name.toLowerCase()}`; progressCurrent.textContent = count; if (currentTier.threshold === nextTier.threshold) { progressNextGoal.textContent = currentTier.threshold; progressBar.style.width = '100%'; } else { progressNextGoal.textContent = nextTier.threshold; const progressInTier = count - currentTier.threshold; const tierRange = nextTier.threshold - currentTier.threshold; const percentage = (progressInTier / tierRange) * 100; progressBar.style.width = `${percentage}%`; } }
     
     function listenForChatMessages() {
         unsubscribeChat = db.collection('chat-messages')
@@ -185,10 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         messageDiv.classList.add('theirs');
                     }
-                    messageDiv.innerHTML = `
-                        <div class="sender">${message.userEmail.split('@')[0]}</div>
-                        <div class="text">${message.text}</div>
-                    `;
+                    messageDiv.innerHTML = `<div class="sender">${message.userEmail.split('@')[0]}</div><div class="text">${message.text}</div>`;
                     chatMessages.appendChild(messageDiv);
                 });
                 chatMessages.scrollTop = chatMessages.scrollHeight;

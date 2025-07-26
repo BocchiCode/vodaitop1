@@ -94,6 +94,56 @@ main { padding: 20px; }
 #search-input { width: 100%; padding: 12px 20px; font-size: 16px; border-radius: 6px; border: 1px solid #4f545c; background-color: #1a262b; color: #f0e6d2; box-sizing: border-box;}
 #search-input::placeholder { color: #a09b8c; }
 
+/* === PHẦN THÊM MỚI: CSS CHO BỘ LỌC ICON === */
+#role-filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filter-btn {
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #c89b3c;
+    background-color: transparent;
+    color: #c89b3c;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+}
+
+.filter-btn img {
+    width: 24px;
+    height: 24px;
+    filter: grayscale(1) brightness(1.5);
+    transition: filter 0.2s ease;
+}
+
+.filter-btn:hover {
+    background-color: rgba(200, 155, 60, 0.2);
+}
+
+.filter-btn.active {
+    background-color: #c89b3c;
+    color: #111;
+}
+
+.filter-btn.active img,
+.filter-btn:hover img {
+    filter: none;
+}
+/* === KẾT THÚC PHẦN THÊM MỚI === */
+
+
 #champion-grid { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 15px; justify-content: center; }
 .champion-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; width: 70px; margin: 0 auto; }
 .champion-icon { width: var(--icon-display-size); height: var(--icon-display-size); background-repeat: no-repeat; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.2); position: relative; background-color: #0a1018; }
@@ -124,7 +174,7 @@ main { padding: 20px; }
 
 #user-menu-container, #trophy-menu-container {
     position: relative;
-    z-index: 101; /* Đảm bảo menu user nổi lên trên */
+    z-index: 101;
 }
 
 #trophy-menu-container {
@@ -175,7 +225,7 @@ main { padding: 20px; }
 #progress-bar { width: 0%; height: 100%; background-color: #00a8b5; transition: width 0.5s ease; border-radius: 2px; }
 #progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px black; width: 100%; text-align: center; }
 
-/* === CSS CHO LIVE CHAT === */
+/* --- CSS CHO LIVE CHAT --- */
 #live-chat {
     width: 300px;
     height: 400px;
