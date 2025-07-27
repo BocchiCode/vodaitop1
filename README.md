@@ -9,9 +9,7 @@ Một công cụ checklist để theo dõi top 1 trong chế độ Võ Đài (Ar
 * 👤 Hệ thống đăng ký, đăng nhập người dùng an toàn với Firebase Authentication.
 * ☁️ Lưu trữ dữ liệu checklist cho từng tài khoản trên Cloud Firestore.
 * 🔄 Tự động cập nhật danh sách tướng mới nhất từ Riot Data Dragon.
-* 🏆 Bảng theo dõi tiến trình thành tựu "Thích nghi với mọi tình huống".
 * 💬 Khung chat trực tiếp cho các người dùng đã đăng nhập.
-* 🔍 Chức năng tìm kiếm tướng theo thời gian thực.
 
 ## Công nghệ sử dụng
 * **Frontend:** HTML, CSS, JavaScript
